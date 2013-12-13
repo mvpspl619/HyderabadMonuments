@@ -77,9 +77,11 @@ public class MainActivity extends Activity {
             mMonuments.add(monument);
             monument = new Monument("Golconda",R.drawable.golconda);
             mMonuments.add(monument);
-            monument = new Monument("Qutubshahi Tombs", R.drawable.qutubshahitombs);
-            mMonuments.add(monument);
             monument = new Monument("Taramati Bardari", R.drawable.taramati);
+            mMonuments.add(monument);
+            monument = new Monument("Birla Mandir", R.drawable.birlamandir);
+            mMonuments.add(monument);
+            monument = new Monument("Tank Bund", R.drawable.tankbund);
             mMonuments.add(monument);
         }
 

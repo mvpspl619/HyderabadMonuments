@@ -13,6 +13,6 @@
         android:layout_height="match_parent"
         android:id="@+id/gridView"
         android:numColumns="@integer/num_of_columns"
-        android:columnWidth="80dp"/>
+        android:horizontalSpacing="20dp"/>
 
 </RelativeLayout>
