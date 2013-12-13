@@ -9,6 +9,13 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+
+import java.util.ArrayList;
+import java.util.List;
+import android.widget.BaseAdapter;
+import android.widget.GridView;
+import android.widget.ImageView;
+import android.widget.TextView;
 import android.os.Build;
 
 public class MainActivity extends Activity {
@@ -51,7 +58,29 @@ public class MainActivity extends Activity {
      */
     public static class PlaceholderFragment extends Fragment {
 
+        GridView mGridView;
+        private class Monument{
+            String name;
+            int drawable;
+
+            Monument(String name, int drawable){
+                this.name = name;
+                this.drawable = drawable;
+            }
+        }
+
+        List<Monument> mMonuments;
         public PlaceholderFragment() {
+            mMonuments = new ArrayList<Monument>();
+
+            Monument monument = new Monument("Charminar", R.drawable.charminar);
+            mMonuments.add(monument);
+            monument = new Monument("Golconda",R.drawable.golconda);
+            mMonuments.add(monument);
+            monument = new Monument("Qutubshahi Tombs", R.drawable.qutubshahitombs);
+            mMonuments.add(monument);
+            monument = new Monument("Taramati Bardari", R.drawable.taramati);
+            mMonuments.add(monument);
         }
 
         @Override
@@ -59,6 +88,48 @@ public class MainActivity extends Activity {
                 Bundle savedInstanceState) {
             View rootView = inflater.inflate(R.layout.fragment_main, container, false);
             return rootView;
+        }
+
+        @Override
+        public void onViewCreated(View view, Bundle savedInstanceState){
+            super.onViewCreated(view, savedInstanceState);
+
+            mGridView = (GridView) view.findViewById(R.id.gridView);
+            mGridView.setAdapter(new GridItemsAdapter());
+        }
+
+        public class GridItemsAdapter extends BaseAdapter{
+
+            @Override
+            public int getCount(){
+                return mMonuments.size();
+            }
+
+            @Override
+            public Object getItem(int i){
+                return mMonuments.get(i);
+            }
+
+            @Override
+            public long getItemId(int i){
+                return i;
+            }
+
+            @Override
+            public View getView(int position, View view, ViewGroup viewGroup) {
+
+                LayoutInflater inflater = getActivity().getLayoutInflater();
+                view = inflater.inflate(R.layout.grid_item, null);
+
+                ImageView imageView = (ImageView) view.findViewById(R.id.imageView);
+                TextView textView = (TextView) view.findViewById(R.id.textView);
+
+                Monument monument = (Monument) getItem(position);
+                imageView.setImageResource(monument.drawable);
+                textView.setText(monument.name);
+
+                return view;
+            }
         }
     }
 
