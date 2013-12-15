@@ -4,5 +4,35 @@
     <string name="app_name">Hyderabad Monuments</string>
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
+    <string name="title_activity_second">SecondActivity</string>
+    <string name="sample_text">Sample Text</string>
+
+    <string name="charminarDescription">
+        The Charminar, built in 1591 CE, is a monument and mosque located in Hyderabad, Andhra Pradesh, India.
+        The landmark has become a global icon of Hyderabad, listed among the most recognized structures of India.
+        The Charminar is on the east bank of Musi river. To the northeast lies the Laad Bazaar and in the west end lies the granite-made richly-ornamented Makkah Masjid.
+    </string>
+    <string name="birlamandirDescription">
+        Birla Mandir is a Hindu temple, built on a 280 feet (85 m) high hillock called Naubath Pahad on a 13 acres (53,000 m2) plot.
+        The construction took 10 years and was consecrated in 1976 by Swami Ranganathananda of Ramakrishna Mission.
+        The temple was constructed by Birla Foundation, which has also constructed several similar temples across India, all of which are known as Birla Mandir.
+    </string>
+    <string name="golcondaDescription">
+        Golkonda, also known as Golconda or Golla konda , a ruined city of Southern India and capital of ancient Golconda Sultanate (c.1518–1687), is situated 11 km west of Hyderabad.
+        It is also a mandal of Hyderabad District.
+        The region is universally famous for the mines that have produced the worlds most famous and coveted gems, including The Hope Diamond, Idols Eye, The Koh-i-Noor and Darya-i-Noor.
+    </string>
+    <string name="tankbundDescription">
+        Hussain Sagar is a lake in Hyderabad, Andhra Pradesh, India, built by Hazrat Hussain Shah Wali in 1562, during the rule of Ibrahim Quli Qutb Shah.
+        It is spread across an area of 5.7 square kilometers and is fed by River Musi.
+        A large monolithic statue of the Gautam Buddha, erected in 1992, stands on a pedestal in the middle of the lake.
+        Maximum depth of the lake is 32 feet.
+    </string>
+    <string name="taramatiDescription">
+        Taramati Baradari is a historical sarai as part of Ibrahim Bagh, a Persian style garden built during the reign of Ibrahim Quli Qutub Shah, the second Sultan of Golconda.
+        The Baradari was constructed on the banks of the Musi river. Today, the region comes under the city limits of Hyderabad, India.
+        The tourism department attributes the name to the reign of the Seventh Sultan of Golconda, Abdullah Qutb Shah who as an ode to his favorite courtesan, Taramati, is said to have named the sarai Taramati Baradari.
+    </string>
+
 
 </resources>

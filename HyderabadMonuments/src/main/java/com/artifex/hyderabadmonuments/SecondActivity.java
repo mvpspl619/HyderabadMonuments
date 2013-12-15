@@ -10,6 +10,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.os.Build;
+import android.widget.ImageView;
+import android.widget.TextView;
 
 public class SecondActivity extends Activity {
 
@@ -19,8 +21,9 @@ public class SecondActivity extends Activity {
         setContentView(R.layout.activity_second);
 
         if (savedInstanceState == null) {
+            Bundle bundle = getIntent().getExtras();
             getFragmentManager().beginTransaction()
-                    .add(R.id.container, new PlaceholderFragment())
+                    .add(R.id.container,Fragment.instantiate(this, PlaceholderFragment.class.getName(),bundle) )
                     .commit();
         }
     }
@@ -59,6 +62,21 @@ public class SecondActivity extends Activity {
                 Bundle savedInstanceState) {
             View rootView = inflater.inflate(R.layout.fragment_second, container, false);
             return rootView;
+        }
+
+        @Override
+        public void onViewCreated(View view, Bundle savedInstanceState){
+            super.onViewCreated(view,savedInstanceState);
+
+            Monument monument = getArguments().getParcelable("monument");
+
+            TextView monName = (TextView) view.findViewById(R.id.monumentName);
+            ImageView monImage = (ImageView) view.findViewById(R.id.monumentImage);
+            TextView monDesc = (TextView) view.findViewById(R.id.monumentDescription);
+
+            monName.setText(monument.getName());
+            monImage.setImageResource(monument.getDrawable());
+            monDesc.setText(monument.getDescription());
         }
     }
 

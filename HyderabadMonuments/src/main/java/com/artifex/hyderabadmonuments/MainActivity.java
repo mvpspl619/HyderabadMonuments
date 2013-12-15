@@ -9,9 +9,10 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-
+import android.content.Intent;
 import java.util.ArrayList;
 import java.util.List;
+import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.GridView;
 import android.widget.ImageView;
@@ -59,35 +60,28 @@ public class MainActivity extends Activity {
     public static class PlaceholderFragment extends Fragment {
 
         GridView mGridView;
-        private class Monument{
-            String name;
-            int drawable;
+        MonumentList monumentList = new MonumentList();
 
-            Monument(String name, int drawable){
-                this.name = name;
-                this.drawable = drawable;
-            }
+        public PlaceholderFragment() {
+
         }
 
-        List<Monument> mMonuments;
-        public PlaceholderFragment() {
-            mMonuments = new ArrayList<Monument>();
+        @Override
+        public void onAttach(Activity activity) {
+            super.onAttach(activity);
 
-            Monument monument = new Monument("Charminar", R.drawable.charminar);
-            mMonuments.add(monument);
-            monument = new Monument("Golconda",R.drawable.golconda);
-            mMonuments.add(monument);
-            monument = new Monument("Taramati Bardari", R.drawable.taramati);
-            mMonuments.add(monument);
-            monument = new Monument("Birla Mandir", R.drawable.birlamandir);
-            mMonuments.add(monument);
-            monument = new Monument("Tank Bund", R.drawable.tankbund);
-            mMonuments.add(monument);
+            ArrayList<Monument> mMonuments = new ArrayList<Monument>();
+            mMonuments.add(new Monument("Charminar", R.drawable.charminar,getString(R.string.charminarDescription)));
+            mMonuments.add(new Monument("Golconda",R.drawable.golconda, getString(R.string.golcondaDescription)));
+            mMonuments.add(new Monument("Taramati Bardari", R.drawable.taramati, getString(R.string.taramatiDescription)));
+            mMonuments.add(new Monument("Birla Mandir", R.drawable.birlamandir, getString(R.string.birlamandirDescription)));
+            mMonuments.add(new Monument("Tank Bund", R.drawable.tankbund, getString(R.string.tankbundDescription)));
+            monumentList.items = mMonuments;
         }
 
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                Bundle savedInstanceState) {
+                                 Bundle savedInstanceState) {
             View rootView = inflater.inflate(R.layout.fragment_main, container, false);
             return rootView;
         }
@@ -98,18 +92,29 @@ public class MainActivity extends Activity {
 
             mGridView = (GridView) view.findViewById(R.id.gridView);
             mGridView.setAdapter(new GridItemsAdapter());
+
+            mGridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+
+                @Override
+                public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                    Intent intent = new Intent(getActivity(), SecondActivity.class);
+                    Monument monument = monumentList.items.get(i);
+                    intent.putExtra("monument", monument);
+                    startActivity(intent);
+                }
+            });
         }
 
         public class GridItemsAdapter extends BaseAdapter{
 
             @Override
             public int getCount(){
-                return mMonuments.size();
+                return monumentList.items.size();
             }
 
             @Override
             public Object getItem(int i){
-                return mMonuments.get(i);
+                return monumentList.items.get(i);
             }
 
             @Override
@@ -126,13 +131,14 @@ public class MainActivity extends Activity {
                 ImageView imageView = (ImageView) view.findViewById(R.id.imageView);
                 TextView textView = (TextView) view.findViewById(R.id.textView);
 
-                Monument monument = (Monument) getItem(position);
+                Monument monument = (Monument)getItem(position);
                 imageView.setImageResource(monument.drawable);
                 textView.setText(monument.name);
 
                 return view;
             }
         }
+
     }
 
 }
