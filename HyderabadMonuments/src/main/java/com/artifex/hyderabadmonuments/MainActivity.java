@@ -60,7 +60,7 @@ public class MainActivity extends Activity {
     public static class PlaceholderFragment extends Fragment {
 
         GridView mGridView;
-        MonumentList monumentList = new MonumentList();
+        MonumentList mMonumentList;
 
         public PlaceholderFragment() {
 
@@ -69,14 +69,8 @@ public class MainActivity extends Activity {
         @Override
         public void onAttach(Activity activity) {
             super.onAttach(activity);
-
-            ArrayList<Monument> mMonuments = new ArrayList<Monument>();
-            mMonuments.add(new Monument("Charminar", R.drawable.charminar,getString(R.string.charminarDescription)));
-            mMonuments.add(new Monument("Golconda",R.drawable.golconda, getString(R.string.golcondaDescription)));
-            mMonuments.add(new Monument("Taramati Bardari", R.drawable.taramati, getString(R.string.taramatiDescription)));
-            mMonuments.add(new Monument("Birla Mandir", R.drawable.birlamandir, getString(R.string.birlamandirDescription)));
-            mMonuments.add(new Monument("Tank Bund", R.drawable.tankbund, getString(R.string.tankbundDescription)));
-            monumentList.items = mMonuments;
+            mMonumentList = new MonumentList(activity);
+            mMonumentList.items = mMonumentList.LoadData();
         }
 
         @Override
@@ -98,7 +92,7 @@ public class MainActivity extends Activity {
                 @Override
                 public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                     Intent intent = new Intent(getActivity(), SecondActivity.class);
-                    Monument monument = monumentList.items.get(i);
+                    Monument monument = mMonumentList.items.get(i);
                     intent.putExtra("monument", monument);
                     startActivity(intent);
                 }
@@ -109,12 +103,12 @@ public class MainActivity extends Activity {
 
             @Override
             public int getCount(){
-                return monumentList.items.size();
+                return mMonumentList.items.size();
             }
 
             @Override
             public Object getItem(int i){
-                return monumentList.items.get(i);
+                return mMonumentList.items.get(i);
             }
 
             @Override
