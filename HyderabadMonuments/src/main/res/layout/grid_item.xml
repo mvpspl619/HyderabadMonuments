@@ -11,11 +11,13 @@
         android:layout_height="wrap_content"
         android:id="@+id/imageView"
         android:src="@drawable/ic_launcher"
-        android:adjustViewBounds="true"/>
+        android:adjustViewBounds="true"
+        android:background="@android:color/white"
+        android:padding="0.8dp"/>
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textColor="@android:color/holo_red_dark"
+        android:textColor="@android:color/white"
         android:text="@string/hello_world"
         android:id="@+id/textView"
         android:textSize="16sp"/>

@@ -13,15 +13,19 @@ public class Monument implements Parcelable
     public String name;
     public int drawable;
     public String description;
+    public double latitude;
+    public double longitude;
 
     Monument(Parcel in){
         readFromParcel(in);
     }
 
-    public Monument(String name, int drawable, String description){
+    public Monument(String name, int drawable, String description, double latitude, double longitude){
         this.name = name;
         this.drawable = drawable;
         this.description = description;
+        this.latitude = latitude;
+        this.longitude = longitude;
     }
 
     public String getName()
@@ -29,6 +33,9 @@ public class Monument implements Parcelable
         return name;
     }
 
+    public double getLatitude() { return latitude; }
+
+    public double getLongitude() { return longitude; }
     public int getDrawable()
     {
         return drawable;
@@ -43,6 +50,8 @@ public class Monument implements Parcelable
         name = in.readString();
         drawable = in.readInt();
         description = in.readString();
+        latitude = in.readDouble();
+        longitude = in.readDouble();
     }
 
     @Override
@@ -55,6 +64,8 @@ public class Monument implements Parcelable
         parcel.writeString(name);
         parcel.writeInt(drawable);
         parcel.writeString(description);
+        parcel.writeDouble(latitude);
+        parcel.writeDouble(longitude);
     }
 
     public static Creator<Monument> CREATOR = new Creator<Monument>() {

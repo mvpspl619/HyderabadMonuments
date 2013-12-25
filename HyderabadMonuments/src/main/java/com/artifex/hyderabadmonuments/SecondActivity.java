@@ -3,6 +3,7 @@ package com.artifex.hyderabadmonuments;
 import android.app.Activity;
 import android.app.ActionBar;
 import android.app.Fragment;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -10,6 +11,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.os.Build;
+import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -77,6 +80,18 @@ public class SecondActivity extends Activity {
             monName.setText(monument.getName());
             monImage.setImageResource(monument.getDrawable());
             monDesc.setText(monument.getDescription());
+
+            Button viewOnMap = (Button) view.findViewById(R.id.viewOnMapButton);
+            viewOnMap.setOnClickListener(new View.OnClickListener()
+            {
+                @Override
+                public void onClick(View v)
+                {
+                    Intent intent = new Intent(getActivity(), MapActivity.class);
+                    intent.putExtra("monument", getArguments().getParcelable("monument"));
+                    startActivity(intent);
+                }
+            });
         }
     }
 

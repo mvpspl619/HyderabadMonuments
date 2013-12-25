@@ -36,11 +36,11 @@ public class MonumentList
     public ArrayList<Monument> LoadData()
     {
         ArrayList<Monument> mMonuments = new ArrayList<Monument>();
-        mMonuments.add(new Monument("Charminar", R.drawable.charminar,mContext.getString(R.string.charminarDescription)));
-        mMonuments.add(new Monument("Golconda",R.drawable.golconda, mContext.getString(R.string.golcondaDescription)));
-        mMonuments.add(new Monument("Taramati Bardari", R.drawable.taramati, mContext.getString(R.string.taramatiDescription)));
-        mMonuments.add(new Monument("Birla Mandir", R.drawable.birlamandir, mContext.getString(R.string.birlamandirDescription)));
-        mMonuments.add(new Monument("Tank Bund", R.drawable.tankbund, mContext.getString(R.string.tankbundDescription)));
+        mMonuments.add(new Monument("Charminar", R.drawable.charminar,mContext.getString(R.string.charminarDescription), 10.00, 10.00));
+        mMonuments.add(new Monument("Golconda",R.drawable.golconda, mContext.getString(R.string.golcondaDescription), 10.00, 10.00));
+        mMonuments.add(new Monument("Taramati Bardari", R.drawable.taramati, mContext.getString(R.string.taramatiDescription), 10.00, 10.00));
+        mMonuments.add(new Monument("Birla Mandir", R.drawable.birlamandir, mContext.getString(R.string.birlamandirDescription), 10.00, 10.00));
+        mMonuments.add(new Monument("Tank Bund", R.drawable.tankbund, mContext.getString(R.string.tankbundDescription), 10.00, 10.00));
 
         return mMonuments;
     }
