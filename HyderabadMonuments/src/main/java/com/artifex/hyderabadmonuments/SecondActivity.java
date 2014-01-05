@@ -71,7 +71,7 @@ public class SecondActivity extends Activity {
         public void onViewCreated(View view, Bundle savedInstanceState){
             super.onViewCreated(view,savedInstanceState);
 
-            Monument monument = getArguments().getParcelable("monument");
+            final Monument monument = getArguments().getParcelable("monument");
 
             TextView monName = (TextView) view.findViewById(R.id.monumentName);
             ImageView monImage = (ImageView) view.findViewById(R.id.monumentImage);
@@ -80,6 +80,16 @@ public class SecondActivity extends Activity {
             monName.setText(monument.getName());
             monImage.setImageResource(monument.getDrawable());
             monDesc.setText(monument.getDescription());
+
+            Button getDirections = (Button) view.findViewById(R.id.directionsButton);
+            getDirections.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Intent intent = new Intent(getActivity(), DirectionsActivity.class);
+                    intent.putExtra("monument", monument);
+                    startActivity(intent);
+                }
+            });
 
             Button viewOnMap = (Button) view.findViewById(R.id.viewOnMapButton);
             viewOnMap.setOnClickListener(new View.OnClickListener()
@@ -92,6 +102,8 @@ public class SecondActivity extends Activity {
                     startActivity(intent);
                 }
             });
+
+
         }
     }
 
