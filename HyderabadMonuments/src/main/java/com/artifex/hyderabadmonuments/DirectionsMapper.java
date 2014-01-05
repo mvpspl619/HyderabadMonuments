@@ -1,0 +1,53 @@
+package com.artifex.hyderabadmonuments;
+
+import com.fasterxml.jackson.core.JsonFactory;
+import com.fasterxml.jackson.core.JsonGenerationException;
+import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.StringWriter;
+
+/**
+ * Created by Home on 6/1/14.
+ */
+public class DirectionsMapper {
+
+        private static ObjectMapper m = new ObjectMapper();
+        private static JsonFactory jf = new JsonFactory();
+
+        public static <T> Object fromJson(String jsonAsString, Class<T> GoogleDirections)
+                throws JsonMappingException, JsonParseException, IOException {
+            return m.readValue(jsonAsString, GoogleDirections);
+        }
+
+        public static <T> Object fromJson(FileReader fr, Class<T> GoogleDirections)
+                throws JsonParseException, IOException
+        {
+            return m.readValue(fr, GoogleDirections);
+        }
+
+        public static String toJson(Object googleDirections, boolean prettyPrint)
+                throws JsonMappingException, JsonGenerationException, IOException {
+            StringWriter sw = new StringWriter();
+            JsonGenerator jg = jf.createJsonGenerator(sw);
+            if (prettyPrint) {
+                jg.useDefaultPrettyPrinter();
+            }
+            m.writeValue(jg, googleDirections);
+            return sw.toString();
+        }
+
+        public static void toJson(Object googleDirections, FileWriter fw, boolean prettyPrint)
+                throws JsonMappingException, JsonGenerationException, IOException {
+            JsonGenerator jg = jf.createJsonGenerator(fw);
+            if (prettyPrint) {
+                jg.useDefaultPrettyPrinter();
+            }
+            m.writeValue(jg, googleDirections);
+        }
+}

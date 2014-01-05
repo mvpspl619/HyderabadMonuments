@@ -4,6 +4,7 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/HyderabadMonuments.iml" filepath="$PROJECT_DIR$/HyderabadMonuments.iml" />
       <module fileurl="file://$PROJECT_DIR$/HyderabadMonuments/HyderabadMonuments-HyderabadMonuments.iml" filepath="$PROJECT_DIR$/HyderabadMonuments/HyderabadMonuments-HyderabadMonuments.iml" />
+      <module fileurl="file://$PROJECT_DIR$/HyderabadMonuments/libs/libs.iml" filepath="$PROJECT_DIR$/HyderabadMonuments/libs/libs.iml" />
     </modules>
   </component>
 </project>

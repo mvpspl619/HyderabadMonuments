@@ -1,10 +1,7 @@
 package com.artifex.hyderabadmonuments;
 
 import android.app.Activity;
-import android.app.ActionBar;
 import android.app.AlertDialog;
-import android.app.Dialog;
-import android.app.DialogFragment;
 import android.app.Fragment;
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -23,17 +20,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesClient;
 import com.google.android.gms.location.LocationClient;
-import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.maps.CameraUpdate;
-import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.MapFragment;
-import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.MarkerOptions;
 
-import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
@@ -44,30 +35,11 @@ import org.apache.http.protocol.HttpContext;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.text.DecimalFormat;
-import java.util.Vector;
 
 public class DirectionsActivity extends Activity {
 
     GoogleMap map;
     static TextView locationBox;
-
-        private class MyGeoPoint {
-        String location;
-        double latitude;
-        double longitude;
-
-        public MyGeoPoint(String loc, double lat, double longi) {
-            this.location = loc;
-            this.latitude = lat;
-            this.longitude = longi;
-        }
-
-        public LatLng getLatLng() {
-            return new LatLng(latitude, longitude);
-        }
-    }
-    Vector<MyGeoPoint> myGeoPoints = new Vector<MyGeoPoint>();
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -79,23 +51,8 @@ public class DirectionsActivity extends Activity {
                     .add(R.id.container, Fragment.instantiate(this, PlaceholderFragment.class.getName(),bundle) )
                     .commit();
         }
-        //addLatLong();
-//        map = ((MapFragment) getFragmentManager().findFragmentById(R.id.map)).getMap();
-//        map.setMyLocationEnabled(true);
-
-
-//        map.addMarker(new MarkerOptions().position(myGeoPoints.get(0).getLatLng()).title("Hyderabad"));
 
     }
-
-
-
-    private void addLatLong() {
-        myGeoPoints.add(new MyGeoPoint("Hyderabad", 17.38504, 78.48667));
-        myGeoPoints.add(new MyGeoPoint("Srinagar", 34.08366, 74.79737));
-        myGeoPoints.add(new MyGeoPoint("Delhi", 28.63531, 77.22496));
-    }
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -147,15 +104,15 @@ public class DirectionsActivity extends Activity {
                     new GooglePlayServicesClient.ConnectionCallbacks() {
                         @Override
                         public void onConnected(Bundle bundle) {
-                            Location location = updateMap();
-                            if(location != null){
-                            String queryString = "http://maps.googleapis.com/maps/api/directions/json?"
+                                Location location = updateMap();
+                                if(location != null){
+                                String queryString = "http://maps.googleapis.com/maps/api/directions/json?"
                                     +"origin="+roundThreeDigits(location.getLatitude())+","+roundThreeDigits(location.getLongitude())
                                     +"&destination="+roundThreeDigits((monument.getLatitude()))+","+roundThreeDigits(monument.getLongitude())
                                     +"&sensor=false&units=metric&mode=driving";
 
-                            new PlacesTask().execute(queryString);
-                                //CALL ANOTHER METHOD TO CONVERT DATA AND SHOW MAPS
+                                new PlacesTask().execute(queryString);
+
                             }
                         }
                         @Override
@@ -226,7 +183,34 @@ public class DirectionsActivity extends Activity {
                 if(progressDialog.isShowing())
                     progressDialog.dismiss();
                 locationBox.setText(s);
-                Log.d("TAG", s);
+                new JsonConversionTask().execute(s);
+            }
+        }
+
+        private class JsonConversionTask extends AsyncTask<String, Void, GoogleDirections>{
+            GoogleDirections directions;
+
+            @Override
+            protected void onPreExecute() {
+                super.onPreExecute();
+            }
+
+            @Override
+            protected GoogleDirections doInBackground(String... strings) {
+                String jsonData = strings[0];
+                try {
+                    directions = (GoogleDirections) DirectionsMapper.fromJson(jsonData, GoogleDirections.class);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                return directions;
+            }
+
+            @Override
+            protected void onPostExecute(GoogleDirections s) {
+                super.onPostExecute(s);
+                if(directions.getStatus() == "OK")
+                    locationBox.setText(directions.toString());
             }
         }
 
