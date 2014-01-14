@@ -2,28 +2,28 @@ package com.artifex.hyderabadmonuments;
 
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.app.Fragment;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Color;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.TextView;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesClient;
 import com.google.android.gms.location.LocationClient;
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.MapFragment;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Polyline;
+import com.google.android.gms.maps.model.PolylineOptions;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -35,23 +35,22 @@ import org.apache.http.protocol.HttpContext;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.text.DecimalFormat;
+import java.util.List;
 
 public class DirectionsActivity extends Activity {
 
-    GoogleMap map;
-    static TextView locationBox;
-
+    Context context;
+    Monument monument;
+    LocationClient client;
+    LatLng currentLocation;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_directions);
         Bundle bundle = getIntent().getExtras();
-        if (savedInstanceState == null) {
-            getFragmentManager().beginTransaction()
-                    .add(R.id.container, Fragment.instantiate(this, PlaceholderFragment.class.getName(),bundle) )
-                    .commit();
-        }
-
+        context = getApplicationContext();
+        monument = bundle.getParcelable("monument");
+        getLocation();
     }
 
     @Override
@@ -77,35 +76,17 @@ public class DirectionsActivity extends Activity {
     /**
      * A placeholder fragment containing a simple view.
      */
-    public static class PlaceholderFragment extends Fragment {
 
-        public PlaceholderFragment() {
-        }
-        Monument monument;
-        LocationClient client;
-        @Override
-        public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                                 Bundle savedInstanceState) {
-            View rootView = inflater.inflate(R.layout.fragment_directions, container, false);
-            return rootView;
-        }
-
-        @Override
-        public void onViewCreated(View view, Bundle savedInstanceState) {
-            super.onViewCreated(view, savedInstanceState);
-            locationBox = (TextView) view.findViewById(R.id.latlongBox);
-            monument = getArguments().getParcelable("monument");
-            getLocation();
-        }
 
         public void getLocation(){
 
-            client = new LocationClient(getActivity(),
+            client = new LocationClient(DirectionsActivity.this,
                     new GooglePlayServicesClient.ConnectionCallbacks() {
                         @Override
                         public void onConnected(Bundle bundle) {
                                 Location location = updateMap();
                                 if(location != null){
+                                    currentLocation = new LatLng(location.getLatitude(), location.getLongitude());
                                 String queryString = "http://maps.googleapis.com/maps/api/directions/json?"
                                     +"origin="+roundThreeDigits(location.getLatitude())+","+roundThreeDigits(location.getLongitude())
                                     +"&destination="+roundThreeDigits((monument.getLatitude()))+","+roundThreeDigits(monument.getLongitude())
@@ -126,6 +107,72 @@ public class DirectionsActivity extends Activity {
             client.connect();
         }
 
+    public Location updateMap(){
+        Location loc = null;
+        Log.d("TAG", client.getLastLocation() + "");
+        boolean isLocationAvailable = checkLocationAvailability();
+
+        if(isLocationAvailable){
+            loc = client.getLastLocation();
+            if(loc == null)
+            {
+                //SHOW A POPUP THAT SAYS NO LOCATION DATA AVAILABLE
+                AlertDialog.Builder errorDialog = new AlertDialog.Builder(DirectionsActivity.this);
+                errorDialog.setMessage("Location data unavailable");
+                errorDialog.create().show();
+            }
+        }
+        else{
+            AlertDialog.Builder builder = new AlertDialog.Builder(DirectionsActivity.this);
+            builder.setMessage("Location access not enabled");
+            builder.setPositiveButton("Open location settings", new DialogInterface.OnClickListener() {
+
+                @Override
+                public void onClick(DialogInterface paramDialogInterface, int paramInt) {
+                    // TODO Auto-generated method stub
+                    Intent myIntent = new Intent(Settings.ACTION_SETTINGS );
+                    startActivity(myIntent);
+                    //get gps
+                }
+            });
+            builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+
+                @Override
+                public void onClick(DialogInterface paramDialogInterface, int paramInt) {
+                    // TODO Auto-generated method stub
+
+                }
+            });
+            builder.create().show();
+        }
+        return loc;
+    }
+
+    public boolean checkLocationAvailability(){
+
+        LocationManager lm = null;
+
+        boolean gps_enabled = false,
+                network_enabled = false;
+        if(lm==null)
+            lm = (LocationManager) DirectionsActivity.this.getBaseContext().getSystemService(Context.LOCATION_SERVICE);
+        try{
+            gps_enabled = lm.isProviderEnabled(LocationManager.GPS_PROVIDER);
+        }
+        catch(Exception ex){}
+
+        try{
+            network_enabled = lm.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
+        }
+        catch(Exception ex){}
+
+        if(!gps_enabled && !network_enabled){
+            return false;
+        }
+        else
+            return true;
+    }
+
         private double roundThreeDigits(double number) {
             DecimalFormat twoDForm = new DecimalFormat("#.###");
             return Double.valueOf(twoDForm.format(number));
@@ -139,7 +186,7 @@ public class DirectionsActivity extends Activity {
             @Override
             protected void onPreExecute() {
                 super.onPreExecute();
-                progressDialog = new ProgressDialog(getActivity());
+                progressDialog = new ProgressDialog(DirectionsActivity.this);
                 progressDialog.setMessage("Getting data, please wait..");
                 progressDialog.show();
                 progressDialog.setCanceledOnTouchOutside(false);
@@ -182,7 +229,6 @@ public class DirectionsActivity extends Activity {
 
                 if(progressDialog.isShowing())
                     progressDialog.dismiss();
-                locationBox.setText(s);
                 new JsonConversionTask().execute(s);
             }
         }
@@ -209,77 +255,25 @@ public class DirectionsActivity extends Activity {
             @Override
             protected void onPostExecute(GoogleDirections s) {
                 super.onPostExecute(s);
-                if(directions.getStatus() == "OK")
-                    locationBox.setText(directions.toString());
+                ShowDirections(s);
             }
         }
 
-        public Location updateMap(){
-            Location loc = null;
-            Log.d("TAG", client.getLastLocation() + "");
-            boolean isLocationAvailable = checkLocationAvailability();
+        private void ShowDirections(GoogleDirections directions) {
+            GoogleMap mMap;
+            MapFragment map = ((MapFragment) getFragmentManager().findFragmentById(R.id.directionsMap));
+            mMap = map.getMap();
 
-            if(isLocationAvailable){
-                loc = client.getLastLocation();
-                if(loc != null)
-                {
-                    locationBox.setText(loc.getLatitude()+","+loc.getLongitude());
-                }
-                else
-                {
-                    locationBox.setText("Location data unavailable");
-                }
+            List<LatLng> directionPoint = directions.getRoutes();
+
+            PolylineOptions rectLine = new PolylineOptions().width(10).color(Color.RED);
+             for (int i = 0; i < directionPoint.size(); i++){
+                rectLine.add(directionPoint.get(i));
             }
-            else{
-                AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-                builder.setMessage("Location access not enabled");
-                builder.setPositiveButton("Open location settings", new DialogInterface.OnClickListener() {
-
-                    @Override
-                    public void onClick(DialogInterface paramDialogInterface, int paramInt) {
-                        // TODO Auto-generated method stub
-                        Intent myIntent = new Intent(Settings.ACTION_SETTINGS );
-                        startActivity(myIntent);
-                        //get gps
-                    }
-                });
-                builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-
-                    @Override
-                    public void onClick(DialogInterface paramDialogInterface, int paramInt) {
-                        // TODO Auto-generated method stub
-
-                    }
-                });
-                builder.create().show();
-            }
-            return loc;
+            Polyline polyLine = mMap.addPolyline(rectLine);
+            LatLng source = new LatLng(monument.getLatitude(), monument.getLongitude());
+            LatLng destination = currentLocation;
         }
 
-        public boolean checkLocationAvailability(){
-
-            LocationManager lm = null;
-
-            boolean gps_enabled = false,
-                    network_enabled = false;
-            if(lm==null)
-                lm = (LocationManager) getActivity().getBaseContext().getSystemService(Context.LOCATION_SERVICE);
-            try{
-                gps_enabled = lm.isProviderEnabled(LocationManager.GPS_PROVIDER);
-            }
-            catch(Exception ex){}
-
-            try{
-                network_enabled = lm.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
-            }
-            catch(Exception ex){}
-
-            if(!gps_enabled && !network_enabled){
-                return false;
-            }
-            else
-                return true;
-        }
-    }
 
 }
